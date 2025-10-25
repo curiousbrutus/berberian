@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Berberian Berber</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-item {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .pass { background-color: #d4edda; border-color: #c3e6cb; }
+        .fail { background-color: #f8d7da; border-color: #f5c6cb; }
+        .pending { background-color: #fff3cd; border-color: #ffeaa7; }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #5568d3; }
+        #results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Berberian Setup Test</h1>
+    <p>Bu sayfa kurulumunuzu test eder. Tüm testlerin geçmesi gerekir.</p>
+    
+    <button onclick="runTests()">Testleri Çalıştır</button>
+    <button onclick="location.href='index.html'">Ana Sayfaya Dön</button>
+    
+    <div id="results"></div>
+
+    <script src="config.js"></script>
+    <script>
+        async function runTests() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<h2>Test Sonuçları:</h2>';
+            
+            // Test 1: Config exists
+            addResult('Config dosyası yüklendi', typeof CONFIG !== 'undefined', 
+                'config.js dosyası bulundu', 'config.js dosyası bulunamadı!');
+            
+            // Test 2: API Key set
+            addResult('Google API Key ayarlandı', 
+                CONFIG.GOOGLE_API_KEY && CONFIG.GOOGLE_API_KEY !== 'YOUR_GOOGLE_API_KEY_HERE',
+                'API key bulundu', 'API key ayarlanmamış! config.js dosyasını düzenleyin.');
+            
+            // Test 3: Calendar IDs set
+            const calendarSet = CONFIG.CALENDARS.barber1.id !== 'BARBER1_CALENDAR_ID@group.calendar.google.com';
+            addResult('Calendar ID\'ler ayarlandı', calendarSet,
+                'Calendar ID\'ler yapılandırıldı', 'Calendar ID\'ler ayarlanmamış!');
+            
+            // Test 4: EmailJS configured
+            const emailSet = CONFIG.EMAILJS.SERVICE_ID !== 'YOUR_EMAILJS_SERVICE_ID';
+            addResult('EmailJS ayarlandı', emailSet,
+                'EmailJS yapılandırıldı', 'EmailJS ayarlanmamış!');
+            
+            // Test 5: Load Google API
+            addPending('Google API yükleniyor...');
+            try {
+                await loadScript('https://apis.google.com/js/api.js');
+                await new Promise(resolve => {
+                    gapi.load('client', resolve);
+                });
+                await gapi.client.init({
+                    apiKey: CONFIG.GOOGLE_API_KEY,
+                    discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
+                });
+                addResult('Google Calendar API bağlantısı', true,
+                    'API başarıyla yüklendi!', '');
+            } catch (error) {
+                addResult('Google Calendar API bağlantısı', false,
+                    '', 'API yüklenemedi: ' + error.message);
+            }
+            
+            // Test 6: Load EmailJS
+            addPending('EmailJS yükleniyor...');
+            try {
+                await loadScript('https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js');
+                emailjs.init(CONFIG.EMAILJS.PUBLIC_KEY);
+                addResult('EmailJS bağlantısı', true,
+                    'EmailJS başarıyla yüklendi!', '');
+            } catch (error) {
+                addResult('EmailJS bağlantısı', false,
+                    '', 'EmailJS yüklenemedi: ' + error.message);
+            }
+        }
+        
+        function addResult(name, passed, successMsg, failMsg) {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test-item ${passed ? 'pass' : 'fail'}`;
+            div.innerHTML = `
+                <strong>${passed ? '✅' : '❌'} ${name}</strong><br>
+                ${passed ? successMsg : failMsg}
+            `;
+            
+            // Remove pending message if exists
+            const pending = results.querySelector('.pending');
+            if (pending) pending.remove();
+            
+            results.appendChild(div);
+        }
+        
+        function addPending(message) {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = 'test-item pending';
+            div.innerHTML = `<strong>⏳ ${message}</strong>`;
+            results.appendChild(div);
+        }
+        
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+    </script>
+</body>
+</html>

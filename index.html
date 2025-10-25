@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Berberian Berber - Randevu Al</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🪒 Berberian Berber</h1>
+            <p>Randevunuzu Kolayca Alın</p>
+        </header>
+
+        <main>
+            <section class="booking-form">
+                <h2>Randevu Oluştur</h2>
+                
+                <form id="appointmentForm">
+                    <div class="form-group">
+                        <label for="barber">Berber Seçiniz:</label>
+                        <select id="barber" name="barber" required>
+                            <option value="">Berber seçin...</option>
+                            <option value="barber1">Ahmet Usta</option>
+                            <option value="barber2">Mehmet Usta</option>
+                            <option value="barber3">Ali Usta</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date">Tarih:</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="time">Saat:</label>
+                        <select id="time" name="time" required>
+                            <option value="">Saat seçin...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="customerName">Adınız Soyadınız:</label>
+                        <input type="text" id="customerName" name="customerName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="customerEmail">E-posta Adresiniz:</label>
+                        <input type="email" id="customerEmail" name="customerEmail" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="customerPhone">Telefon Numaranız:</label>
+                        <input type="tel" id="customerPhone" name="customerPhone" placeholder="+90 5xx xxx xx xx" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="service">Hizmet:</label>
+                        <select id="service" name="service" required>
+                            <option value="">Hizmet seçin...</option>
+                            <option value="haircut">Saç Kesimi (30 dk)</option>
+                            <option value="beard">Sakal Tıraşı (20 dk)</option>
+                            <option value="both">Saç + Sakal (45 dk)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Randevu Al</button>
+                </form>
+
+                <div id="loading" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Randevunuz oluşturuluyor...</p>
+                </div>
+
+                <div id="message" class="message"></div>
+            </section>
+
+            <section class="available-slots">
+                <h3>Bugünün Müsait Saatleri</h3>
+                <div id="availableSlots" class="slots-container">
+                    <p>Lütfen bir tarih ve berber seçin...</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>© 2025 Berberian Berber - Tüm hakları saklıdır</p>
+        </footer>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
